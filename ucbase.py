@@ -305,6 +305,13 @@ class ASTNode:
         )
         ctx.print("}", indent=True)
 
+    def gen_type_decls(self, ctx):
+        """Generate forward type declarations, writing them to out."""
+        ast_map(lambda n: n.gen_type_decls(ctx), self.children)
+        
+    def gen_function_decls(self, ctx):
+        """Generate forward function declarations, writing them to out."""
+        ast_map(lambda n: n.gen_function_decls(ctx), self.children)
 
 ##############
 # Start Node #
@@ -400,8 +407,15 @@ class ArrayTypeNameNode(BaseTypeNameNode):
         # In particular, its elem_type child must have its type computed first
         super().resolve_types(ctx)
         self.type = self.elem_type.type.array_type
-
-
+    
+    def gen_function_decls(self, ctx):
+        """Generate forward function declarations, writing them to out."""
+        # ctx.print(f"UC_ARRAY(", indent=False)
+        # self.elem_type.gen_functions_decls(ctx)
+        # ctx.print(f");", indent=False)
+        ctx.print(self.type.mangle(), indent=False)
+# UC_PRIMITIVE(void)
+#   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args));
 @dataclass
 class VarDeclNode(ASTNode):
     """An AST node representing a variable or field declaration.
@@ -414,7 +428,11 @@ class VarDeclNode(ASTNode):
     name: NameNode
 
     # add your code below if necessary
-
+    def gen_function_decls(self, ctx):
+        """Generate forward function declarations, writing them to out."""
+        # ctx.print(f"UC_PRIMITIVE({self.vartype.type.name.raw});", indent=False)
+        # ctx.print(f"UC_PRIMITIVE({self.vartype.type.name.raw});", indent=False)
+        ctx.print(self.vartype.type.mangle(), indent=False)
 
 @dataclass
 class ParameterNode(ASTNode):
@@ -428,8 +446,11 @@ class ParameterNode(ASTNode):
     name: NameNode
 
     # add your code below if necessary
-
-
+    # def gen_function_decls(self, ctx):
+    #     self.vartype.gen_function_decls(ctx)
+    #     ctx.print(self.mangle())
+# UC_PRIMITIVE(void)
+#   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args));
 @dataclass
 class StructDeclNode(DeclNode):
     """An AST node representing a type declaration.
@@ -482,6 +503,12 @@ class StructDeclNode(DeclNode):
         new_ctx = ctx.clone()
         new_ctx["local_env"] = self.local_env
         super().type_check(new_ctx)
+        
+    def gen_type_decls(self, ctx):
+        """Generate forward type declarations, writing them to out."""
+        ctx.print(f"struct UC_TYPEDEF({self.name.raw});", indent=True)
+        # print("gen type decls")
+        return
 
 
 @dataclass
@@ -576,6 +603,21 @@ class FunctionDeclNode(DeclNode):
         new_ctx["rettype"] = self.func.rettype
         new_ctx["local_env"] = self.local_env
         super().type_check(new_ctx)
+        
+    def gen_function_decls(self, ctx):
+        """Generate forward function declarations, writing them to out."""
+        # ctx.print(f"UC_PRIMITIVE({self.rettype.type.mangle()});", indent=False)
+        ctx.print(self.rettype.type.mangle(), indent=False)
+        # ctx.print(f"UC_FUNCTION({self.name.raw})", indent=False)
+        ctx.print(self.func.mangle(), indent=True)
+        ctx.print(f"(", indent=False)
+        for parameter in self.parameters:
+            parameter.gen_function_decls(ctx)
+            ctx.print(f" ", indent=False)
+        ctx.print(f");", indent=False)
+        
+# UC_PRIMITIVE(void)
+#   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args));
 
 
 ######################
@@ -646,3 +688,4 @@ def graph_gen(item,
             ),
             file=out,
         )
+    
