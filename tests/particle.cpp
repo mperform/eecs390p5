@@ -41,3 +41,30 @@ UC_PRIMITIVE(void)
   UC_FUNCTION(simulate)(UC_PRIMITIVE(int));
 UC_PRIMITIVE(void)
   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)));
+  // Full type definitions
+
+struct UC_TYPEDEF(particle) {
+  // member variable declaratons
+  UC_PRIMITIVE(float) UC_VAR(x);
+  UC_PRIMITIVE(float) UC_VAR(y);
+  UC_PRIMITIVE(float) UC_VAR(x_vel);
+  UC_PRIMITIVE(float) UC_VAR(y_vel);
+  UC_PRIMITIVE(float) UC_VAR(x_acc);
+  UC_PRIMITIVE(float) UC_VAR(y_acc);
+  UC_PRIMITIVE(int) UC_VAR(id);
+  // equality operator
+  UC_PRIMITIVE(boolean) operator==(const UC_TYPEDEF(particle) &rhs) const {
+  return UC_VAR(x) == rhs.UC_VAR(x) && UC_VAR(y) == rhs.UC_VAR(y) && UC_VAR(x_vel) == rhs.UC_VAR(x_vel) && UC_VAR(y_vel) == rhs.UC_VAR(y_vel) && UC_VAR(x_acc) == rhs.UC_VAR(x_acc) && UC_VAR(y_acc) == rhs.UC_VAR(y_acc) && UC_VAR(id) == rhs.UC_VAR(id);
+  }
+  // inequality operator
+  UC_PRIMITIVE(boolean) operator!=(const UC_TYPEDEF(particle) &rhs) const {
+  return UC_VAR(x) != rhs.UC_VAR(x) || UC_VAR(y) != rhs.UC_VAR(y) || UC_VAR(x_vel) != rhs.UC_VAR(x_vel) || UC_VAR(y_vel) != rhs.UC_VAR(y_vel) || UC_VAR(x_acc) != rhs.UC_VAR(x_acc) || UC_VAR(y_acc) != rhs.UC_VAR(y_acc) || UC_VAR(id) != rhs.UC_VAR(id);
+}
+//default constructor
+UC_TYPEDEF(particle)() : 
+
+  UC_VAR(x)(), UC_VAR(y)(), UC_VAR(x_vel)(), UC_VAR(y_vel)(), UC_VAR(x_acc)(), UC_VAR(y_acc)(), UC_VAR(id)()
+{}
+//non default constructor
+UC_TYPEDEF(particle)(UC_PRIMITIVE(float) UC_VAR(x), UC_PRIMITIVE(float) UC_VAR(y), UC_PRIMITIVE(float) UC_VAR(x_vel), UC_PRIMITIVE(float) UC_VAR(y_vel), UC_PRIMITIVE(float) UC_VAR(x_acc), UC_PRIMITIVE(float) UC_VAR(y_acc), UC_PRIMITIVE(int) UC_VAR(id)) : UC_VAR(x){UC_VAR(x)}, UC_VAR(y){UC_VAR(y)}, UC_VAR(x_vel){UC_VAR(x_vel)}, UC_VAR(y_vel){UC_VAR(y_vel)}, UC_VAR(x_acc){UC_VAR(x_acc)}, UC_VAR(y_acc){UC_VAR(y_acc)}, UC_VAR(id){UC_VAR(id)}{}
+};

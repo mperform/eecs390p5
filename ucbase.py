@@ -512,57 +512,74 @@ class StructDeclNode(DeclNode):
     def gen_type_defs(self, ctx):
         # struct UC_TYPEDEF(bar) {
         print("gen_type defs in struct")
-        ctx.print(f"struct {self.type.mangle()} \u007b", indent=False)
+        ctx.print(f"struct UC_TYPEDEF({self.name.raw}) \u007b", indent=False)
         
+        # Declare variables in struct def
+        ctx.print("// member variable declaratons", indent=True)
+        for var in self.vardecls:
+            ctx.print(f"{var.vartype.type.mangle()} UC_VAR({var.name.raw});", indent=True)
+        
+        # Equality Operator
         ctx.print("// equality operator", indent=True)
-        # UC_PRIMITIVE(boolean) operator==(const UC_TYPEDEF(bar) &rhs) const {
-        ctx.print(f"UC_PRIMITIVE(bool) operator==(const {self.type.mangle()} &rhs) const \u007b", indent=True)
+        ctx.print(f"UC_PRIMITIVE(boolean) operator==(const UC_TYPEDEF({self.name.raw}) &rhs) const \u007b", indent=True)
         # // Check if the fields of the two structs are equal
         # return a == rhs.a && b == rhs.b;
+
         out = "return "
-        for var in self.vardecls:
-            out = out + f"{var.vartype.type.mangle()} == rhs.{var.vartype.type.mangle()} && "
-        out = out.rstrip('&& ')
+        if len(self.vardecls) != 0:
+            for var in self.vardecls:
+                out = out + f"UC_VAR({var.name.raw}) == rhs.UC_VAR({var.name.raw}) && "
+            out = out.rstrip('&& ')
+        else: 
+            out = out + "true"
+        out = out + ';'
         ctx.print(out, indent=True)
         #   }
         ctx.print('}', indent=True)
-
+        
+        # Inequality Operator
         ctx.print("// inequality operator", indent=True)
         # UC_PRIMITIVE(boolean) operator!=(const UC_TYPEDEF(bar) &rhs) const {
-        ctx.print(f"UC_PRIMITIVE(bool) operator!=(const {self.type.mangle()} &rhs) const \u007b", indent=True)
+        ctx.print(f"UC_PRIMITIVE(boolean) operator!=(const UC_TYPEDEF({self.name.raw}) &rhs) const \u007b", indent=True)
         # // Check if the fields of the two structs are equal
         # return a != rhs.a || b != rhs.b;
         out = "return "
-        for var in self.vardecls:
-            out = out + f"{var.vartype.type.mangle()} != rhs.{var.vartype.type.mangle()} || "
-        out = out.rstrip('|| ')
+        if len(self.vardecls) != 0:
+            for var in self.vardecls:
+                out = out + f"UC_VAR({var.name.raw}) != rhs.UC_VAR({var.name.raw}) || "
+            out = out.rstrip('|| ')
+        else: 
+            out = out + "false"
+        out = out + ';'
         ctx.print(out, indent=True)
         #   }
         ctx.print('}', indent=False)
         
         #default constructor
-        out = f"{self.type.mangle()}() : \n"
-        ctx.print(out, indent=False)
-        out = ""
-        for var in self.vardecls:
-            out = out + f"{var.vartype.type.mangle()}(), "
-        out = out.rstrip(', ')
-        ctx.print(out, indent=True)
-        out = '{' 
-        out = out + '}'
-        ctx.print(out, indent=False)
-
+        if len(self.vardecls) != 0:
+            ctx.print("//default constructor", indent=False)
+            out = f"UC_TYPEDEF({self.name.raw})() : \n"
+            ctx.print(out, indent=False)
+            out = ""
+            for var in self.vardecls:
+                out = out + f"UC_VAR({var.name.raw})(), "
+            out = out.rstrip(', ')
+            ctx.print(out, indent=True)
+            out = '{' 
+            out = out + '}'
+            ctx.print(out, indent=False)
         #Non default 
-        out = f"{self.type.mangle()}("
-        for var in self.vardecls:
-            out = out + f"{var.vartype.type.mangle()} UC_VAR({var.name.raw}), "
-        out = out.rstrip(", ")
-        out = out + ") : "
-        for var in self.vardecls:
-            out = out + f"UC_VAR{var.name.raw}\u007bUC_VAR({var.name.raw})\u007D, "
-        out = out.rstrip(", ")
-        out = out + "\u007b\u007D"
-        ctx.print(out, indent=False)
+            ctx.print("//non default constructor", indent=False)
+            out = f"UC_TYPEDEF({self.name.raw})("
+            for var in self.vardecls:
+                out = out + f"{var.vartype.type.mangle()} UC_VAR({var.name.raw}), "
+            out = out.rstrip(", ")
+            out = out + ") : "
+            for var in self.vardecls:
+                out = out + f"UC_VAR({var.name.raw})\u007bUC_VAR({var.name.raw})\u007D, "
+            out = out.rstrip(", ")
+            out = out + "\u007b\u007D"
+            ctx.print(out, indent=False)
         out = '};'
         ctx.print(out, indent=False)
 # struct MyStruct {
@@ -575,7 +592,6 @@ class StructDeclNode(DeclNode):
 #     MyStruct(int xVal, int yVal) : x{xVal}, y{yVal} {} //non default
 # };
         
-        #TODO: 
 
 # Spec example:
 # struct UC_TYPEDEF(bar) {
