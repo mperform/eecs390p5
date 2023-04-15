@@ -81,4 +81,5 @@ def gen_function_defs(tree, out):
     ctx = uccontext.PhaseContext(4, out=out, indent='  ')
     ctx.print('// Full function definitions\n', indent=True)
     # add your code here
+    tree.gen_function_defs(ctx)
     print("gen function defs")

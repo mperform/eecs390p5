@@ -316,6 +316,10 @@ class ASTNode:
     def gen_type_defs(self, ctx):
         """Generate full type definitions, writing them to out."""
         ast_map(lambda n: n.gen_type_defs(ctx), self.children)
+    
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ast_map(lambda n: n.gen_function_defs(ctx), self.children)
 
 ##############
 # Start Node #
@@ -510,6 +514,7 @@ class StructDeclNode(DeclNode):
         return
 
     def gen_type_defs(self, ctx):
+        """Generate full type definitions, writing them to out."""
         # struct UC_TYPEDEF(bar) {
         print("gen_type defs in struct")
         ctx.print(f"struct UC_TYPEDEF({self.name.raw}) \u007b", indent=False)
