@@ -119,14 +119,13 @@ class StringNode(LiteralNode):
                                                "string")
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(f'"{self.text}"s', end='')
+        ctx.print(f'{self.text}s', end='')
 
 @dataclass
 class BooleanNode(LiteralNode):
     """An AST node representing a boolean literal."""
 
     # add your code below
-    # Phase 6 Start by computing the type of literals.
     # Tested
 
     def type_check(self, ctx):
@@ -193,7 +192,8 @@ class NameExpressionNode(ExpressionNode):
                                               self.name.raw)
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(self.name, end='')
+        #TODO: is UC_VAR here correct? 
+        ctx.print(f"UC_VAR({self.name.raw})", end='')
 
 #######################
 # Calls and Accessors #
@@ -361,8 +361,9 @@ class FieldAccessNode(ExpressionNode):
             )
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        self.receiver.gen_function_defs(ctx)
-        ctx.print(f"->{self.field.raw}", end='')
+        # self.receiver.gen_function_defs(ctx)
+        #TODO: Is this always UC_REFERENCE? and is there a case where .name doesn't exist?
+        ctx.print(f"UC_VAR({self.receiver.name.raw})->UC_VAR({self.field.raw})", end='')
         # UC_REFERENCE(Person)->age
         #TODO: maybe need UC in front of field 
         

@@ -734,6 +734,7 @@ class FunctionDeclNode(DeclNode):
         
         # Make sure to place declarations of local uC variables
         # at the top of the body of a generated function
+        ctx.print("// decl local uC vars", indent=True)
         for var in self.vardecls:
             ctx.print(f"{var.vartype.type.mangle()} UC_VAR({var.name.raw});", indent=True)    
         

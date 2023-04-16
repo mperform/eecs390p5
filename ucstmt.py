@@ -44,9 +44,11 @@ class BlockNode(ASTNode):
     
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
+        ctx.print("// Block Body", indent=True)
         for statement in self.statements:
             statement.gen_function_defs(ctx)
-            ctx.print(';', indent='True')
+            ctx.print('; //Statement', indent=False)
+        
 
 @dataclass
 class IfNode(StatementNode):
@@ -77,14 +79,17 @@ class IfNode(StatementNode):
 
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
+        ctx.print("", indent=True)
+        ctx.print("// Start of If Block", indent=True)
         out = "if ("
-        ctx.print(out, indent=True)
+        ctx.print(out, indent=True, end='')
         self.test.gen_function_defs(ctx)
-        ctx.print('){', indent=True)
+        ctx.print('){', indent=False)
         self.then_block.gen_function_defs(ctx)
         if len(self.else_block.statements) != 0:
             ctx.print('} else {', indent=True)
             self.else_block.gen_function_defs(ctx)
+            ctx.print('}', indent=True)
         else:
             ctx.print('}', indent=True)
     
@@ -125,6 +130,16 @@ class WhileNode(StatementNode):
             error(ctx.phase, self.position,
                   "Not an applicable type for Whilenode.")
         self.body.type_check(ctx)
+    
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ctx.print("// Start of While Block", indent=True)
+        ctx.print(f"while (", indent=False, end='')
+        self.test.gen_function_defs(ctx)
+        ctx.print(') {', indent=False)
+        self.body.gen_function_defs(ctx)
+        ctx.print('}',indent=True)
+        
 
 
 @dataclass
@@ -168,6 +183,22 @@ class ForNode(StatementNode):
             self.update.type_check(ctx)
         # type check on blocks
         self.body.type_check(ctx)
+    
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ctx.print("// Start of For Block", indent=True)
+        ctx.print(f"for (", indent=True, end='')
+        if self.init:
+            self.init.gen_function_defs(ctx)
+        ctx.print('; ', indent=False, end='')
+        if self.test:
+            self.test.gen_function_defs(ctx)
+        ctx.print('; ', indent=False, end='')
+        if self.update:
+            self.update.gen_function_defs(ctx)
+        ctx.print(') {', indent=False)
+        self.body.gen_function_defs(ctx)
+        ctx.print('}', indent=True)
 
 
 @dataclass

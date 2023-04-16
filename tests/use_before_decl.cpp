@@ -1,3 +1,11 @@
+#include "defs.hpp"
+#include "ref.hpp"
+#include "array.hpp"
+#include "library.hpp"
+#include "expr.hpp"
+
+namespace uc {
+
   // Forward type declarations
 
   struct UC_TYPEDEF(foo);
@@ -48,3 +56,18 @@ UC_TYPEDEF(baz)() :
 //non default constructor
 UC_TYPEDEF(baz)(UC_PRIMITIVE(string) UC_VAR(s)) : UC_VAR(s){UC_VAR(s)}{}
 };
+  // Full function definitions
+
+UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args)){
+  // decl local uC vars
+  UC_REFERENCE(foo) UC_VAR(f);
+  // Block Body
+UC_VAR(f) = uc_construct<UC_REFERENCE(foo)>(uc_construct<UC_REFERENCE(baz)>(UC_VAR(args)[0])
+)
+; //Statement
+UC_FUNCTION(bar)(UC_VAR(f)); //Statement
+}
+UC_PRIMITIVE(void) UC_FUNCTION(bar) (UC_REFERENCE(foo) UC_VAR(f)){
+  // decl local uC vars
+  // Block Body
+UC_FUNCTION(println)(
