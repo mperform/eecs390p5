@@ -719,7 +719,32 @@ class FunctionDeclNode(DeclNode):
             out = out + param.vartype.type.mangle() + ", "
         out = out.rstrip(', ')
         ctx.print(f"{out});", indent=True)
+    
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        # UC_TYPE(type) UC_FUNCTION(func_name) (parameters)
+        out = f"{self.rettype.type.mangle()} UC_FUNCTION({self.name.raw}) ("
+        for param in self.parameters:
+            # parameters are of format UC_TYPE(type) UC_VAR(var_name)
+            out = out + f"{param.vartype.type.mangle()} UC_VAR({param.name.raw}), "
+        out = out.rstrip(", ")
+        out = out + ')'
+        out = out + '{'
+        ctx.print(out, indent=False)
+        
+        # Make sure to place declarations of local uC variables
+        # at the top of the body of a generated function
+        for var in self.vardecls:
+            ctx.print(f"{var.vartype.type.mangle()} UC_VAR({var.name.raw});", indent=True)    
+        
+        self.body.gen_function_defs(ctx)
+        ctx.print('}', indent=False)  
 
+# UC_PRIMITIVE(void) UC_FUNCTION(bar) (UC_TYPEDEF(foo) UC_VAR(f)){
+  
+#   } 
+# // void bar(foo f)() {
+# // }
 
 # UC_PRIMITIVE(void)
 #   UC_FUNCTION(main)(

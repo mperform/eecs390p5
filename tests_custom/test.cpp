@@ -15,6 +15,10 @@ namespace uc {
 
 UC_PRIMITIVE(void)
   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)));
+UC_PRIMITIVE(void)
+  UC_FUNCTION(if_test)();
+UC_PRIMITIVE(void)
+  UC_FUNCTION(while_test)();
   // Full type definitions
 
 struct UC_TYPEDEF(foo) {
@@ -74,6 +78,14 @@ UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args
   UC_REFERENCE(foo) UC_VAR(f);
   UC_REFERENCE(bar) UC_VAR(b);
   UC_REFERENCE(baz) UC_VAR(z);
+}
+UC_PRIMITIVE(void) UC_FUNCTION(if_test) (){
+  UC_PRIMITIVE(int) UC_VAR(num);
+  UC_PRIMITIVE(int) UC_VAR(zero);
+}
+UC_PRIMITIVE(void) UC_FUNCTION(while_test) (){
+  UC_PRIMITIVE(int) UC_VAR(num);
+  UC_PRIMITIVE(int) UC_VAR(zero);
 }
 } // namespace uc
 

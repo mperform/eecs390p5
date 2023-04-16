@@ -20,7 +20,7 @@ class StatementNode(ASTNode):
     """The base class for all statement nodes."""
 
     # add your code below if necessary
-
+        
 
 @dataclass
 class BlockNode(ASTNode):
@@ -41,7 +41,12 @@ class BlockNode(ASTNode):
         """
         for statement in self.statements:
             statement.type_check(ctx)
-
+    
+    def gen_function_decls(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        for statement in self.statements:
+            statement.gen_function_decls(ctx)
+            ctx.print(';', indent='True')
 
 @dataclass
 class IfNode(StatementNode):
@@ -67,10 +72,30 @@ class IfNode(StatementNode):
         if self.test.type.name != "boolean":
             error(ctx.phase, self.position,
                   "Not an applicable type for IFnode.")
-        self.then_block.type_check(ctx)
+        self.then_block.tyspe_check(ctx)
         self.else_block.type_check(ctx)
 
-
+    def gen_function_decls(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        out = "if ("
+        ctx.print(out, indent=True)
+        self.test.gen_function_decls(ctx)
+        ctx.print('){', indent=True)
+        self.then_block.gen_function_decls(ctx)
+        if len(self.else_block.statements) != 0:
+            ctx.print('} else {', indent=True)
+            self.else_block.gen_function_decls(ctx)
+        else:
+            ctx.print('}', indent=True)
+    
+    # if (
+    # x == 3 
+    # && foo() == True
+    # || y == 3
+    # )
+    # {
+        
+    # }    
 @dataclass
 class WhileNode(StatementNode):
     """An AST node representing a while statement.

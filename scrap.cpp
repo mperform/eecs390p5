@@ -1,3 +1,6 @@
+#include <iostream>
+
+using namespace std;
 struct MyStruct {
   int param1;
   double param2;
@@ -14,5 +17,11 @@ int main (){
     m.param1 = 1;
     m.param2 = 1.2; 
     m.param3 = false;
-    
+    if (
+      m.param1 == 1 
+      ||
+      m.param2 == 1.2
+    ){
+      cout << ("True");
+    }
 }
