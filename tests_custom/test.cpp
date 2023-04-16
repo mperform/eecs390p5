@@ -78,14 +78,42 @@ UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args
   UC_REFERENCE(foo) UC_VAR(f);
   UC_REFERENCE(bar) UC_VAR(b);
   UC_REFERENCE(baz) UC_VAR(z);
+{NameNode: f} = uc_construct<UC_REFERENCE(foo)>()
+  ;
+{NameNode: b} = uc_construct<UC_REFERENCE(bar)>()
+  ;
+{NameNode: z} = uc_construct<UC_REFERENCE(baz)>()
+  ;
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)({NameNode: f}->x))  ;
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)({NameNode: b}->f == nullptr))  ;
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)({NameNode: b}->a == nullptr))  ;
 }
 UC_PRIMITIVE(void) UC_FUNCTION(if_test) (){
   UC_PRIMITIVE(int) UC_VAR(num);
   UC_PRIMITIVE(int) UC_VAR(zero);
+{NameNode: num} = 1  ;
+{NameNode: zero} = 0  ;
+  if (
+{NameNode: num} > {NameNode: zero}  ){
+UC_FUNCTION(println)(""Hello""s)  ;
+  }
+  ;
+  if (
+{NameNode: num} < {NameNode: zero}  ){
+UC_FUNCTION(println)({NameNode: num})  ;
+  } else {
+UC_FUNCTION(println)({NameNode: zero})  ;
+  ;
 }
 UC_PRIMITIVE(void) UC_FUNCTION(while_test) (){
   UC_PRIMITIVE(int) UC_VAR(num);
   UC_PRIMITIVE(int) UC_VAR(zero);
+{NameNode: num} = 1  ;
+{NameNode: zero} = 0  ;
+{NameNode: num} > {NameNode: zero}UC_FUNCTION(println)({NameNode: zero})  ;
+  ;
+{NameNode: num} > {NameNode: zero} || {NameNode: num} < {NameNode: zero}UC_FUNCTION(println)({NameNode: zero})  ;
+  ;
 }
 } // namespace uc
 

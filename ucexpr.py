@@ -57,7 +57,7 @@ class LiteralNode(ExpressionNode):
     text: str
 
     # add your code below if neccessary
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print(self.text, end='')
 @dataclass
@@ -117,7 +117,7 @@ class StringNode(LiteralNode):
         self.type = ctx.global_env.lookup_type(ctx.phase,
                                                self.position,
                                                "string")
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print(f'"{self.text}"s', end='')
 
@@ -191,7 +191,7 @@ class NameExpressionNode(ExpressionNode):
         self.type = ctx["local_env"].get_type(ctx.phase,
                                               self.position,
                                               self.name.raw)
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print(self.name, end='')
 
@@ -238,14 +238,14 @@ class CallNode(ExpressionNode):
         super().type_check(ctx)
         self.func.check_args(ctx.phase, self.position, self.args)
 
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print(f'UC_FUNCTION({self.name.raw})(', end='')
         if self.args:
-            self.args[0].gen_function_decls(ctx)
+            self.args[0].gen_function_defs(ctx)
             for arg in self.args[1:]:
                 ctx.print(', ', end='')
-                arg.gen_function_decls(ctx)
+                arg.gen_function_defs(ctx)
         ctx.print(')', end='')
 
 @dataclass
@@ -290,7 +290,7 @@ class NewNode(ExpressionNode):
         super().type_check(ctx)
         self.type.check_args(ctx.phase, self.position, self.args)
     
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         #           // Generic construction of a uC array or user-defined object.
         #   // Dispatches to uc_construct_dispatch for the actual
@@ -302,12 +302,12 @@ class NewNode(ExpressionNode):
         #     );
         #   }
         # uc_construct<UC_REFERENCE(bar)>();
-        ctx.print(f"uc_construct<{self.typename.mangle()}>(", end='')
+        ctx.print(f"uc_construct<{self.typename.type.mangle()}>(", end='')
         if self.args:
-            self.args[0].gen_function_decls(ctx)
+            self.args[0].gen_function_defs(ctx)
             for arg in self.args[1:]:
                 ctx.print(", ", end='')
-                arg.gen_function_decls(ctx)
+                arg.gen_function_defs(ctx)
         ctx.print(")")
 
 @dataclass
@@ -359,10 +359,10 @@ class FieldAccessNode(ExpressionNode):
                 self.position,
                 "must be of arraytype or userdefined type",
             )
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        self.receiver.gen_function_decls(ctx)
-        ctx.print(f"->{self.field.name.raw}", end='')
+        self.receiver.gen_function_defs(ctx)
+        ctx.print(f"->{self.field.raw}", end='')
         # UC_REFERENCE(Person)->age
         #TODO: maybe need UC in front of field 
         
@@ -408,14 +408,16 @@ class ArrayIndexNode(ExpressionNode):
                 self.position,
                 "receiver must be array",
             )
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        self.receiver.gen_function_decls(ctx)
+        self.receiver.gen_function_defs(ctx)
         # uc_array_index()
         ctx.print("[", end='')
-        self.index.gen_function_decls(ctx)
+        self.index.gen_function_defs(ctx)
         ctx.print("]", end='')
+        #TODO: finish
         # uc_construct<UC_REFERENCE(bar)>();
+        
 #####################
 # Unary Expressions #
 #####################
@@ -433,10 +435,10 @@ class UnaryPrefixNode(ExpressionNode):
     op_name: str
 
     # add your code below if necessary
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print(self.op_name, end='')
-        self.expr.gen_function_decls(ctx)
+        self.expr.gen_function_defs(ctx)
        
 
 @dataclass
@@ -602,11 +604,11 @@ class BinaryOpNode(ExpressionNode):
     op_name: str
 
     # add your code below if necessary
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        self.lhs.gen_function_decls(ctx, end='')
-        ctx.print(f" {self.op_name} ")
-        self.rhs.gen_function_decls(ctx, end='')
+        self.lhs.gen_function_defs(ctx)
+        ctx.print(f" {self.op_name} ", end='')
+        self.rhs.gen_function_defs(ctx)
 
 @dataclass
 class BinaryArithNode(BinaryOpNode):

@@ -42,10 +42,10 @@ class BlockNode(ASTNode):
         for statement in self.statements:
             statement.type_check(ctx)
     
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         for statement in self.statements:
-            statement.gen_function_decls(ctx)
+            statement.gen_function_defs(ctx)
             ctx.print(';', indent='True')
 
 @dataclass
@@ -75,16 +75,16 @@ class IfNode(StatementNode):
         self.then_block.tyspe_check(ctx)
         self.else_block.type_check(ctx)
 
-    def gen_function_decls(self, ctx):
+    def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         out = "if ("
         ctx.print(out, indent=True)
-        self.test.gen_function_decls(ctx)
+        self.test.gen_function_defs(ctx)
         ctx.print('){', indent=True)
-        self.then_block.gen_function_decls(ctx)
+        self.then_block.gen_function_defs(ctx)
         if len(self.else_block.statements) != 0:
             ctx.print('} else {', indent=True)
-            self.else_block.gen_function_decls(ctx)
+            self.else_block.gen_function_defs(ctx)
         else:
             ctx.print('}', indent=True)
     
