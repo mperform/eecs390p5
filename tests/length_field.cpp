@@ -39,14 +39,22 @@ UC_TYPEDEF(foo)(UC_PRIMITIVE(int) UC_VAR(x), UC_PRIMITIVE(string) UC_VAR(length)
 };
   // Full function definitions
 
-  UC_PRIMITIVE(void) UC_FUNCTION(bar) (UC_TYPEDEF(foo) UC_VAR(f)){
-  
-  } 
-// void bar(foo f)() {
-// }
-
+UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args)){
+  // decl local uC vars
+  UC_REFERENCE(foo) UC_VAR(f);
+  // Block Body
+UC_FUNCTION(println)((""s +   uc_length_field(UC_VAR(args)))); //Statement
+(UC_VAR(f) = uc_construct<UC_REFERENCE(foo)>(3, "hello"s)
+); //Statement
+UC_FUNCTION(println)(  uc_length_field(UC_VAR(f))); //Statement
+(  uc_length_field(UC_VAR(f)) = "world"s); //Statement
+UC_FUNCTION(println)(  uc_length_field(UC_VAR(f))); //Statement
+}
+UC_PRIMITIVE(void) UC_FUNCTION(bar) (UC_REFERENCE(foo) UC_VAR(f)){
+  // decl local uC vars
+  // Block Body
+}
 } // namespace uc
-
 
 int main(int argc, char **argv) {
   uc::UC_ARRAY(uc::UC_PRIMITIVE(string)) args = uc::uc_make_array_of<uc::UC_PRIMITIVE(string)>();

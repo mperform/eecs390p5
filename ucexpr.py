@@ -361,12 +361,14 @@ class FieldAccessNode(ExpressionNode):
             )
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        # self.receiver.gen_function_defs(ctx)
-        #TODO: Is this always UC_REFERENCE? and is there a case where .name doesn't exist?
-        self.receiver.gen_function_defs(ctx)
-        ctx.print(f"->UC_VAR({self.field.raw})", end='')
-        # UC_REFERENCE(Person)->age
-        #TODO: maybe need UC in front of field 
+        if self.field.raw == "length":
+            ctx.print(f"uc_length_field(", indent=True, end='')
+            self.receiver.gen_function_defs(ctx)
+            ctx.print(')', end='', indent=False)
+        else:
+            self.receiver.gen_function_defs(ctx)
+            ctx.print(f"->UC_VAR({self.field.raw})", end='')
+            # UC_REFERENCE(Person)->age
         
 
 @dataclass
