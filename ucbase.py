@@ -308,18 +308,19 @@ class ASTNode:
     def gen_type_decls(self, ctx):
         """Generate forward type declarations, writing them to out."""
         ast_map(lambda n: n.gen_type_decls(ctx), self.children)
-        
+
     def gen_function_decls(self, ctx):
         """Generate forward function declarations, writing them to out."""
         ast_map(lambda n: n.gen_function_decls(ctx), self.children)
-    
+
     def gen_type_defs(self, ctx):
         """Generate full type definitions, writing them to out."""
         ast_map(lambda n: n.gen_type_defs(ctx), self.children)
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ast_map(lambda n: n.gen_function_defs(ctx), self.children)
+
 
 ##############
 # Start Node #
@@ -384,15 +385,14 @@ class TypeNameNode(BaseTypeNameNode):
         Overrides method in ucfrontend.py
         """
         if not ctx["is_return"] and self.name == "void":
-            error(ctx.phase,
-                  self.position, "A non return type can't be of type void")
+            error(ctx.phase, self.position,
+                  "A non return type can't be of type void")
 
         new_ctx = ctx.clone()
         new_ctx["is_return"] = False
 
         self.type = ctx.global_env.lookup_type(ctx.phase,
-                                               self.position,
-                                               self.name.raw)
+                                               self.position, self.name.raw)
 
 
 @dataclass
@@ -415,7 +415,7 @@ class ArrayTypeNameNode(BaseTypeNameNode):
         # In particular, its elem_type child must have its type computed first
         super().resolve_types(ctx)
         self.type = self.elem_type.type.array_type
-    
+
 
 # UC_PRIMITIVE(void)
 #   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args));
@@ -430,12 +430,6 @@ class VarDeclNode(ASTNode):
     vartype: BaseTypeNameNode
     name: NameNode
 
-    # add your code below if necessary
-    # def gen_function_decls(self, ctx):
-    #     """Generate forward function declarations, writing them to out."""
-    #     # ctx.print(f"UC_PRIMITIVE({self.vartype.type.name.raw});", indent=False)
-    #     # ctx.print(f"UC_PRIMITIVE({self.vartype.type.name.raw});", indent=False)
-    #     ctx.print(self.vartype.type.mangle(), indent=False)
 
 @dataclass
 class ParameterNode(ASTNode):
@@ -452,6 +446,8 @@ class ParameterNode(ASTNode):
     # def gen_function_decls(self, ctx):
     #     self.vartype.gen_function_decls(ctx)
     #     ctx.print(self.mangle())
+
+
 # UC_PRIMITIVE(void)
 #   UC_FUNCTION(main)(UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args));
 @dataclass
@@ -490,10 +486,7 @@ class StructDeclNode(DeclNode):
         for var in self.vardecls:
             self.local_env.add_variable(
                 ctx.phase,
-                self.position,
-                var.name.raw,
-                var.vartype.type,
-                "field"
+                self.position, var.name.raw, var.vartype.type, "field"
             )
 
     def type_check(self, ctx):
@@ -506,61 +499,86 @@ class StructDeclNode(DeclNode):
         new_ctx = ctx.clone()
         new_ctx["local_env"] = self.local_env
         super().type_check(new_ctx)
-        
+
     def gen_type_decls(self, ctx):
         """Generate forward type declarations, writing them to out."""
         ctx.print(f"struct UC_TYPEDEF({self.name.raw});", indent=True)
         # print("gen type decls")
-        return
 
     def gen_type_defs(self, ctx):
         """Generate full type definitions, writing them to out."""
         # struct UC_TYPEDEF(bar) {
         print("gen_type defs in struct")
         ctx.print(f"struct UC_TYPEDEF({self.name.raw}) \u007b", indent=False)
-        
+
         # Declare variables in struct def
         ctx.print("// member variable declaratons", indent=True)
         for var in self.vardecls:
-            ctx.print(f"{var.vartype.type.mangle()} UC_VAR({var.name.raw});", indent=True)
-        
-        # Equality Operator
+            ctx.print(
+                f"{var.vartype.type.mangle()} "
+                + f"UC_VAR({var.name.raw});",
+                indent=True
+            )
+
+        self.gen_equality_helper(ctx)
+
+        self.gen_inequality_helper(ctx)
+
+        self.gen_constructor_helper(ctx)
+
+    def gen_equality_helper(self, ctx):
+        """Print equality."""
         ctx.print("// equality operator", indent=True)
-        ctx.print(f"UC_PRIMITIVE(boolean) operator==(const UC_TYPEDEF({self.name.raw}) &rhs) const \u007b", indent=True)
+        name = self.name.raw
+        ctx.print(
+            "UC_PRIMITIVE(boolean) "
+            + f"operator==(const UC_TYPEDEF({name}) &rhs) const \u007b",
+            indent=True,
+        )
         # // Check if the fields of the two structs are equal
         # return a == rhs.a && b == rhs.b;
 
         out = "return "
         if len(self.vardecls) != 0:
             for var in self.vardecls:
-                out = out + f"UC_VAR({var.name.raw}) == rhs.UC_VAR({var.name.raw}) && "
-            out = out.rstrip('&& ')
-        else: 
+                out = out + f"UC_VAR({var.name.raw}) == "
+                out = out + f"rhs.UC_VAR({var.name.raw}) && "
+            out = out.rstrip("&& ")
+        else:
             out = out + "true"
-        out = out + ';'
+        out = out + ";"
         ctx.print(out, indent=True)
         #   }
-        ctx.print('}', indent=True)
-        
+        ctx.print("}", indent=True)
+
+    def gen_inequality_helper(self, ctx):
+        """Print inequality."""
         # Inequality Operator
         ctx.print("// inequality operator", indent=True)
         # UC_PRIMITIVE(boolean) operator!=(const UC_TYPEDEF(bar) &rhs) const {
-        ctx.print(f"UC_PRIMITIVE(boolean) operator!=(const UC_TYPEDEF({self.name.raw}) &rhs) const \u007b", indent=True)
+        name = self.name.raw
+        ctx.print(
+            "UC_PRIMITIVE(boolean) operator!="
+            + f"(const UC_TYPEDEF({name}) &rhs) const \u007b",
+            indent=True,
+        )
         # // Check if the fields of the two structs are equal
         # return a != rhs.a || b != rhs.b;
         out = "return "
         if len(self.vardecls) != 0:
             for var in self.vardecls:
-                out = out + f"UC_VAR({var.name.raw}) != rhs.UC_VAR({var.name.raw}) || "
-            out = out.rstrip('|| ')
-        else: 
+                out = out + f"UC_VAR({var.name.raw}) "
+                out = out + f"!= rhs.UC_VAR({var.name.raw}) || "
+            out = out.rstrip("|| ")
+        else:
             out = out + "false"
-        out = out + ';'
+        out = out + ";"
         ctx.print(out, indent=True)
         #   }
-        ctx.print('}', indent=False)
-        
-        #default constructor
+        ctx.print("}", indent=False)
+
+    def gen_constructor_helper(self, ctx):
+        """Print default and custom constructor."""
         if len(self.vardecls) != 0:
             ctx.print("//default constructor", indent=False)
             out = f"UC_TYPEDEF({self.name.raw})() : \n"
@@ -568,49 +586,29 @@ class StructDeclNode(DeclNode):
             out = ""
             for var in self.vardecls:
                 out = out + f"UC_VAR({var.name.raw})(), "
-            out = out.rstrip(', ')
+            out = out.rstrip(", ")
             ctx.print(out, indent=True)
-            out = '{' 
-            out = out + '}'
+            out = "{"
+            out = out + "}"
             ctx.print(out, indent=False)
-        #Non default 
+            # Non default
             ctx.print("//non default constructor", indent=False)
             out = f"UC_TYPEDEF({self.name.raw})("
             for var in self.vardecls:
-                out = out + f"{var.vartype.type.mangle()} UC_VAR({var.name.raw}), "
+                out = out + f"{var.vartype.type.mangle()} "
+                out = out + f"UC_VAR({var.name.raw}), "
             out = out.rstrip(", ")
             out = out + ") : "
             for var in self.vardecls:
-                out = out + f"UC_VAR({var.name.raw})\u007bUC_VAR({var.name.raw})\u007D, "
+                out = (
+                    out + f"UC_VAR({var.name.raw})\u007b"
+                    + f"UC_VAR({var.name.raw})\u007D, "
+                )
             out = out.rstrip(", ")
             out = out + "\u007b\u007D"
             ctx.print(out, indent=False)
-        out = '};'
+        out = "};"
         ctx.print(out, indent=False)
-# struct MyStruct {
-#     int x;
-#     int y;
-
-#       MyStruct() :
-    #     param1(), param2(), param3()
-    #   {}
-#     MyStruct(int xVal, int yVal) : x{xVal}, y{yVal} {} //non default
-# };
-        
-
-# Spec example:
-# struct UC_TYPEDEF(bar) {
-#   UC_PRIMITIVE(boolean) operator==(const UC_TYPEDEF(bar) &rhs) const {
-#     ...
-#   }
-#   ...
-# };
-
-#     bool operator==(MyStruct const& lhs, MyStruct const& rhs) {
-#     // Check if the fields of the two structs are equal
-#     return lhs.a == rhs.a && lhs.b == rhs.b;
-#     }
-
 
 
 @dataclass
@@ -705,53 +703,45 @@ class FunctionDeclNode(DeclNode):
         new_ctx["rettype"] = self.func.rettype
         new_ctx["local_env"] = self.local_env
         super().type_check(new_ctx)
-    
+
     def print_helper(self, ctx):
+        """Print parameters."""
         for parameter in self.parameters:
             parameter.gen_function_decls(ctx)
 
     def gen_function_decls(self, ctx):
         """Generate forward function declarations, writing them to out."""
-        ctx.print(f"{self.rettype.type.mangle()}", indent=False) #Primitive
+        ctx.print(f"{self.rettype.type.mangle()}", indent=False)  # Primitive
         out = self.func.mangle()
         out = out + "("
         for param in self.parameters:
             out = out + param.vartype.type.mangle() + ", "
-        out = out.rstrip(', ')
+        out = out.rstrip(", ")
         ctx.print(f"{out});", indent=True)
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         # UC_TYPE(type) UC_FUNCTION(func_name) (parameters)
         out = f"{self.rettype.type.mangle()} UC_FUNCTION({self.name.raw}) ("
         for param in self.parameters:
             # parameters are of format UC_TYPE(type) UC_VAR(var_name)
-            out = out + f"{param.vartype.type.mangle()} UC_VAR({param.name.raw}), "
+            out = out + f"{param.vartype.type.mangle()} "
+            out = out + f"UC_VAR({param.name.raw}), "
         out = out.rstrip(", ")
-        out = out + ')'
-        out = out + '{'
+        out = out + ")"
+        out = out + "{"
         ctx.print(out, indent=False)
-        
-        # Make sure to place declarations of local uC variables
+
         # at the top of the body of a generated function
         ctx.print("// decl local uC vars", indent=True)
         for var in self.vardecls:
-            ctx.print(f"{var.vartype.type.mangle()} UC_VAR({var.name.raw});", indent=True)    
-        
+            ctx.print(
+                f"{var.vartype.type.mangle()}"
+                + f" UC_VAR({var.name.raw});", indent=True
+            )
+
         self.body.gen_function_defs(ctx)
-        ctx.print('}', indent=False)  
-
-# UC_PRIMITIVE(void) UC_FUNCTION(bar) (UC_TYPEDEF(foo) UC_VAR(f)){
-  
-#   } 
-# // void bar(foo f)() {
-# // }
-
-# UC_PRIMITIVE(void)
-#   UC_FUNCTION(main)(
-#       UC_ARRAY(UC_PRIMITIVE(string)) 
-#       UC_VAR(args)
-#   );
+        ctx.print("}", indent=False)
 
 
 ######################
@@ -774,8 +764,7 @@ def child_str(child):
     return str(child)
 
 
-def graph_gen(item,
-              parent_id=None,
+def graph_gen(item, parent_id=None,
               child_num=None,
               child_name=None,
               out=sys.stdout):
@@ -822,4 +811,3 @@ def graph_gen(item,
             ),
             file=out,
         )
-    

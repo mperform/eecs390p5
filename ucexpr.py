@@ -15,9 +15,6 @@ from ucerror import error
 import ucfunctions
 import uctypes
 
-# import pdb
-
-
 #############################
 # Base Node for Expressions #
 #############################
@@ -59,7 +56,9 @@ class LiteralNode(ExpressionNode):
     # add your code below if neccessary
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(self.text, end='')
+        ctx.print(self.text, end="")
+
+
 @dataclass
 class IntegerNode(LiteralNode):
     """An AST node representing an integer (int or long) literal."""
@@ -74,13 +73,14 @@ class IntegerNode(LiteralNode):
         """
         if self.text[-1] == "l" or self.text[-1] == "L":
             self.type = ctx.global_env.lookup_type(ctx.phase,
-                                                   self.position,
-                                                   "long")
+                                                   self.position, "long")
         else:
             self.type = ctx.global_env.lookup_type(ctx.phase,
                                                    self.position,
                                                    "int")
+
     # int x = 3;
+
 
 @dataclass
 class FloatNode(LiteralNode):
@@ -115,11 +115,12 @@ class StringNode(LiteralNode):
         exists.
         """
         self.type = ctx.global_env.lookup_type(ctx.phase,
-                                               self.position,
-                                               "string")
+                                               self.position, "string")
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(f'{self.text}s', end='')
+        ctx.print(f"{self.text}s", end="")
+
 
 @dataclass
 class BooleanNode(LiteralNode):
@@ -156,8 +157,7 @@ class NullNode(LiteralNode):
         exists.
         """
         self.type = ctx.global_env.lookup_type(ctx.phase,
-                                               self.position,
-                                               "null")
+                                               self.position, "null")
 
 
 ###################
@@ -190,9 +190,11 @@ class NameExpressionNode(ExpressionNode):
         self.type = ctx["local_env"].get_type(ctx.phase,
                                               self.position,
                                               self.name.raw)
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(f"UC_VAR({self.name.raw})", end='')
+        ctx.print(f"UC_VAR({self.name.raw})", end="")
+
 
 #######################
 # Calls and Accessors #
@@ -239,13 +241,14 @@ class CallNode(ExpressionNode):
 
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(f'UC_FUNCTION({self.name.raw})(', end='')
+        ctx.print(f"UC_FUNCTION({self.name.raw})(", end="")
         if self.args:
             self.args[0].gen_function_defs(ctx)
             for arg in self.args[1:]:
-                ctx.print(', ', end='')
+                ctx.print(", ", end="")
                 arg.gen_function_defs(ctx)
-        ctx.print(')', end='')
+        ctx.print(")", end="")
+
 
 @dataclass
 class NewNode(ExpressionNode):
@@ -288,26 +291,17 @@ class NewNode(ExpressionNode):
             )
         super().type_check(ctx)
         self.type.check_args(ctx.phase, self.position, self.args)
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        #           // Generic construction of a uC array or user-defined object.
-        #   // Dispatches to uc_construct_dispatch for the actual
-        #   // implementation.
-        #   template<class T, class... Args>
-        #   T uc_construct(Args&&... args) {
-        #     return uc_construct_dispatch<T>::construct(
-        #       std::forward<Args>(args)...
-        #     );
-        #   }
-        # uc_construct<UC_REFERENCE(bar)>();
-        ctx.print(f"uc_construct<{self.typename.type.mangle()}>(", end='')
+        ctx.print(f"uc_construct<{self.typename.type.mangle()}>(", end="")
         if self.args:
             self.args[0].gen_function_defs(ctx)
             for arg in self.args[1:]:
-                ctx.print(", ", end='')
+                ctx.print(", ", end="")
                 arg.gen_function_defs(ctx)
         ctx.print(")")
+
 
 @dataclass
 class FieldAccessNode(ExpressionNode):
@@ -340,8 +334,7 @@ class FieldAccessNode(ExpressionNode):
             )
             if self.field.raw == "length":
                 self.type = ctx.global_env.lookup_type(ctx.phase,
-                                                       self.position,
-                                                       "int")
+                                                       self.position, "int")
             else:
                 error(
                     ctx.phase,
@@ -358,17 +351,18 @@ class FieldAccessNode(ExpressionNode):
                 self.position,
                 "must be of arraytype or userdefined type",
             )
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         if self.field.raw == "length":
-            ctx.print(f"uc_length_field(", indent=True, end='')
+            ctx.print("uc_length_field(", indent=True, end="")
             self.receiver.gen_function_defs(ctx)
-            ctx.print(')', end='', indent=False)
+            ctx.print(")", end="", indent=False)
         else:
             self.receiver.gen_function_defs(ctx)
-            ctx.print(f"->UC_VAR({self.field.raw})", end='')
+            ctx.print(f"->UC_VAR({self.field.raw})", end="")
             # UC_REFERENCE(Person)->age
-        
+
 
 @dataclass
 class ArrayIndexNode(ExpressionNode):
@@ -411,16 +405,18 @@ class ArrayIndexNode(ExpressionNode):
                 self.position,
                 "receiver must be array",
             )
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         # self.receiver.gen_function_defs(ctx)
         # uc_array_index()
-        ctx.print("uc_array_index(", end='')
+        ctx.print("uc_array_index(", end="")
         self.receiver.gen_function_defs(ctx)
-        ctx.print(', ', end='')
+        ctx.print(", ", end="")
         self.index.gen_function_defs(ctx)
-        ctx.print(")", end='')
-        
+        ctx.print(")", end="")
+
+
 #####################
 # Unary Expressions #
 #####################
@@ -440,9 +436,9 @@ class UnaryPrefixNode(ExpressionNode):
     # add your code below if necessary
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(self.op_name, end='')
+        ctx.print(self.op_name, end="")
         self.expr.gen_function_defs(ctx)
-       
+
 
 @dataclass
 class PrefixSignNode(UnaryPrefixNode):
@@ -459,14 +455,16 @@ class PrefixSignNode(UnaryPrefixNode):
         self.expr.type_check(ctx)
         if uctypes.is_numeric_type(self.expr.type):
             self.type = ctx.global_env.lookup_type(
-                ctx.phase, self.position, self.expr.type.name
+                ctx.phase,
+                self.position,
+                self.expr.type.name
             )
         else:
             error(
                 ctx.phase, self.position,
                 "Not an applicable type for unary sign node."
             )
-    
+
 
 @dataclass
 class PrefixPlusNode(PrefixSignNode):
@@ -532,7 +530,8 @@ class PrefixIncrDecrNode(UnaryPrefixNode):
             self.type = self.expr.type
         else:
             error(
-                ctx.phase, self.position,
+                ctx.phase,
+                self.position,
                 "Not an applicable type for unary Not node."
             )
 
@@ -578,18 +577,19 @@ class IDNode(UnaryPrefixNode):
         if is_primitive(
             self.expr
         ):  # if it's not a Primitive type, it must be a reference type
-            error(ctx.phase,
-                  self.position,
+            error(ctx.phase, self.position,
                   "Not an applicable type for IDnode.")
         else:
             self.type = ctx.global_env.lookup_type(
                 ctx.phase, self.position, self.expr.type.name
             )
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print("uc_id(", end='', indent=True)
+        ctx.print("uc_id(", end="", indent=True)
         self.expr.gen_function_defs(ctx)
-        ctx.print(')')
+        ctx.print(")")
+
 
 ######################
 # Binary Expressions #
@@ -613,11 +613,12 @@ class BinaryOpNode(ExpressionNode):
     # add your code below if necessary
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(f"(", end='')
+        ctx.print("(", end="")
         self.lhs.gen_function_defs(ctx)
-        ctx.print(f" {self.op_name} ", end='')
+        ctx.print(f" {self.op_name} ", end="")
         self.rhs.gen_function_defs(ctx)
-        ctx.print(f")", end='')
+        ctx.print(")", end="")
+
 
 @dataclass
 class BinaryArithNode(BinaryOpNode):
@@ -638,9 +639,9 @@ class BinaryArithNode(BinaryOpNode):
             self.rhs.type
         ):
             self.type = uctypes.join_types(
-                ctx.phase, self.position,
-                self.lhs.type,
-                self.rhs.type, ctx.global_env
+                ctx.phase, self.position, self.lhs.type,
+                self.rhs.type,
+                ctx.global_env
             )
         else:
             error(
@@ -668,10 +669,12 @@ class BinaryLogicNode(BinaryOpNode):
             error(
                 ctx.phase,
                 self.position,
-                "Not an applicable type for logical operation.",
+                "Not an applicable type"
+                + " for logical operation.",
             )
         self.type = ctx.global_env.lookup_type(ctx.phase,
-                                               self.position, "boolean")
+                                               self.position,
+                                               "boolean")
 
 
 @dataclass
@@ -694,7 +697,8 @@ class BinaryCompNode(BinaryOpNode):
         ) or (self.lhs.type.name == "string"
               and self.rhs.type.name == "string"):
             self.type = ctx.global_env.lookup_type(ctx.phase,
-                                                   self.position, "boolean")
+                                                   self.position,
+                                                   "boolean")
         else:
             error(
                 ctx.phase,
@@ -723,9 +727,11 @@ class EqualityTestNode(BinaryOpNode):
             or is_convertible
         ):
             self.type = ctx.global_env.lookup_type(ctx.phase,
-                                                   self.position, "boolean")
+                                                   self.position,
+                                                   "boolean")
         else:
-            error(ctx.phase, self.position,
+            error(ctx.phase,
+                  self.position,
                   "Not a valid pair of types for equality.")
 
 
@@ -817,16 +823,19 @@ class PlusNode(BinaryArithNode):
                 self.position,
                 "Invalid primitive type for Plus Operation.",
             )
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print(f"(", end='')
-        ctx.print(f"uc_add(", end='')
+        ctx.print("(", end="")
+        ctx.print("uc_add(", end="")
         self.lhs.gen_function_defs(ctx)
-        ctx.print(f", ", end='')
+        ctx.print(", ", end="")
         self.rhs.gen_function_defs(ctx)
-        ctx.print(f")", end='')
-        ctx.print(f")", end='')
-        #(uc_add(lhs, rhs))
+        ctx.print(")", end="")
+        ctx.print(")", end="")
+        # (uc_add(lhs, rhs))
+
+
 @dataclass
 class MinusNode(BinaryArithNode):
     """An AST node representing a binary minus operation."""
@@ -1000,8 +1009,7 @@ class PushNode(BinaryOpNode):
         if isinstance(self.lhs.type, uctypes.ArrayType):
             # target = source
             # lhs = rhs
-            if uctypes.is_compatible(self.rhs.type.array_type,
-                                     self.lhs.type):
+            if uctypes.is_compatible(self.rhs.type.array_type, self.lhs.type):
                 self.type = self.lhs.type
             else:
                 error(
@@ -1015,15 +1023,14 @@ class PushNode(BinaryOpNode):
                 self.position,
                 "Not an applicable type for Push Array.",
             )
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print("uc_array_push(", end='')
+        ctx.print("uc_array_push(", end="")
         self.lhs.gen_function_defs(ctx)
-        ctx.print(', ', end='')
+        ctx.print(", ", end="")
         self.rhs.gen_function_defs(ctx)
-        ctx.print(")", end='')
-    
+        ctx.print(")", end="")
 
 
 @dataclass
@@ -1064,10 +1071,11 @@ class PopNode(BinaryOpNode):
                 self.position,
                 "Not an applicable type for pop.",
             )
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        ctx.print("uc_array_pop(", end='')
+        ctx.print("uc_array_pop(", end="")
         self.lhs.gen_function_defs(ctx)
-        ctx.print(', ', end='')
+        ctx.print(", ", end="")
         self.rhs.gen_function_defs(ctx)
-        ctx.print(")", end='')
+        ctx.print(")", end="")

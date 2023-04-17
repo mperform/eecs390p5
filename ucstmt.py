@@ -20,7 +20,7 @@ class StatementNode(ASTNode):
     """The base class for all statement nodes."""
 
     # add your code below if necessary
-        
+
 
 @dataclass
 class BlockNode(ASTNode):
@@ -41,14 +41,14 @@ class BlockNode(ASTNode):
         """
         for statement in self.statements:
             statement.type_check(ctx)
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print("// Block Body", indent=True)
         for statement in self.statements:
             statement.gen_function_defs(ctx)
-            ctx.print('; //Statement', indent=False)
-        
+            ctx.print("; //Statement", indent=False)
+
 
 @dataclass
 class IfNode(StatementNode):
@@ -72,9 +72,10 @@ class IfNode(StatementNode):
         """
         self.test.type_check(ctx)
         if self.test.type.name != "boolean":
-            error(ctx.phase, self.position,
+            error(ctx.phase,
+                  self.position,
                   "Not an applicable type for IFnode.")
-        self.then_block.tyspe_check(ctx)
+        self.then_block.type_check(ctx)
         self.else_block.type_check(ctx)
 
     def gen_function_defs(self, ctx):
@@ -82,25 +83,27 @@ class IfNode(StatementNode):
         ctx.print("", indent=True)
         ctx.print("// Start of If Block", indent=True)
         out = "if ("
-        ctx.print(out, indent=True, end='')
+        ctx.print(out, indent=True, end="")
         self.test.gen_function_defs(ctx)
-        ctx.print('){', indent=False)
+        ctx.print("){", indent=False)
         self.then_block.gen_function_defs(ctx)
         if len(self.else_block.statements) != 0:
-            ctx.print('} else {', indent=True)
+            ctx.print("} else {", indent=True)
             self.else_block.gen_function_defs(ctx)
-            ctx.print('}', indent=True)
+            ctx.print("}", indent=True)
         else:
-            ctx.print('}', indent=True)
-    
+            ctx.print("}", indent=True)
+
     # if (
-    # x == 3 
+    # x == 3
     # && foo() == True
     # || y == 3
     # )
     # {
-        
-    # }    
+
+    # }
+
+
 @dataclass
 class WhileNode(StatementNode):
     """An AST node representing a while statement.
@@ -130,16 +133,15 @@ class WhileNode(StatementNode):
             error(ctx.phase, self.position,
                   "Not an applicable type for Whilenode.")
         self.body.type_check(ctx)
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print("// Start of While Block", indent=True)
-        ctx.print(f"while (", indent=False, end='')
+        ctx.print("while (", indent=False, end="")
         self.test.gen_function_defs(ctx)
-        ctx.print(') {', indent=False)
+        ctx.print(") {", indent=False)
         self.body.gen_function_defs(ctx)
-        ctx.print('}',indent=True)
-        
+        ctx.print("}", indent=True)
 
 
 @dataclass
@@ -171,7 +173,6 @@ class ForNode(StatementNode):
         context in which it is used. Checks that a valid main function
         exists.
         """
-        # typecheck test
         self.test.type_check(ctx)
         if self.test.type.name != "boolean":
             error(ctx.phase, self.position,
@@ -183,22 +184,22 @@ class ForNode(StatementNode):
             self.update.type_check(ctx)
         # type check on blocks
         self.body.type_check(ctx)
-    
+
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
         ctx.print("// Start of For Block", indent=True)
-        ctx.print(f"for (", indent=True, end='')
+        ctx.print("for (", indent=True, end="")
         if self.init:
             self.init.gen_function_defs(ctx)
-        ctx.print('; ', indent=False, end='')
+        ctx.print("; ", indent=False, end="")
         if self.test:
             self.test.gen_function_defs(ctx)
-        ctx.print('; ', indent=False, end='')
+        ctx.print("; ", indent=False, end="")
         if self.update:
             self.update.gen_function_defs(ctx)
-        ctx.print(') {', indent=False)
+        ctx.print(") {", indent=False)
         self.body.gen_function_defs(ctx)
-        ctx.print('}', indent=True)
+        ctx.print("}", indent=True)
 
 
 @dataclass
@@ -212,7 +213,10 @@ class BreakNode(StatementNode):
             error(ctx.phase, self.position, "break not found in loop.")
 
     def gen_function_defs(self, ctx):
-        ctx.print("break", end='')
+        """Generate full function definitions, writing them to out."""
+        ctx.print("break", end="")
+
+
 @dataclass
 class ContinueNode(StatementNode):
     """An AST node representing a continue statement."""
@@ -224,7 +228,10 @@ class ContinueNode(StatementNode):
             error(ctx.phase, self.position, "continue not found in loop.")
 
     def gen_function_defs(self, ctx):
-        ctx.print("continue", end='')
+        """Generate full function definitions, writing them to out."""
+        ctx.print("continue", end="")
+
+
 @dataclass
 class ReturnNode(StatementNode):
     """An AST node representing a return statement.
@@ -266,13 +273,16 @@ class ReturnNode(StatementNode):
                     self.position,
                     "a return expression is provided within a void function.",
                 )
+
     def gen_function_defs(self, ctx):
-        ctx.print(f"return", end='')
+        """Generate full function definitions, writing them to out."""
+        ctx.print("return", end="")
         if self.expr:
-            ctx.print(" ", end='')
+            ctx.print(" ", end="")
             self.expr.gen_function_defs(ctx)
-        ctx.print(';', end='')
-        ctx.print("//return node", end='')
+        ctx.print(";", end="")
+        ctx.print("//return node", end="")
+
 
 @dataclass
 class ExpressionStatementNode(StatementNode):
@@ -292,5 +302,7 @@ class ExpressionStatementNode(StatementNode):
         exists.
         """
         self.expr.type_check(ctx)
+
     def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
         self.expr.gen_function_defs(ctx)

@@ -16,6 +16,7 @@ import uccontext
 # Code Generation #
 ###################
 
+
 def gen_header(_, out):
     """Generate the header for a uC program, writing it to out.
 
@@ -29,7 +30,7 @@ def gen_header(_, out):
     ctx.print('#include "library.hpp"')
     ctx.print('#include "expr.hpp"')
     ctx.print()
-    ctx.print('namespace uc {\n')
+    ctx.print("namespace uc {\n")
 
 
 def gen_footer(_, out):
@@ -39,47 +40,52 @@ def gen_footer(_, out):
     uC program.
     """
     ctx = uccontext.PhaseContext(out=out)
-    ctx.print('} // namespace uc\n')
-    ctx.print('int main(int argc, char **argv) {')
-    ctx.print('  uc::UC_ARRAY(uc::UC_PRIMITIVE(string)) args = ' +
-              'uc::uc_make_array_of<uc::UC_PRIMITIVE(string)>();')
-    ctx.print('  for (int i = 1; i < argc; i++) {')
-    ctx.print('    uc::uc_array_push(args, ' +
-              'uc::UC_PRIMITIVE(string)(argv[i]));')
-    ctx.print('  }')
-    ctx.print('  uc::UC_FUNCTION(main)(args);')
-    ctx.print('  return 0;')
-    ctx.print('}')
+    ctx.print("} // namespace uc\n")
+    ctx.print("int main(int argc, char **argv) {")
+    ctx.print(
+        "  uc::UC_ARRAY(uc::UC_PRIMITIVE(string)) args = "
+        + "uc::uc_make_array_of<uc::UC_PRIMITIVE(string)>();"
+    )
+    ctx.print("  for (int i = 1; i < argc; i++) {")
+    ctx.print("    uc::uc_array_push(args, "
+              + "uc::UC_PRIMITIVE(string)(argv[i]));")
+    ctx.print("  }")
+    ctx.print("  uc::UC_FUNCTION(main)(args);")
+    ctx.print("  return 0;")
+    ctx.print("}")
 
 
 def gen_type_decls(tree, out):
     """Generate forward type declarations, writing them to out."""
-    ctx = uccontext.PhaseContext(1, out=out, indent='  ')
-    ctx.print('// Forward type declarations\n', indent=True)
+    ctx = uccontext.PhaseContext(1, out=out, indent="  ")
+    ctx.print("// Forward type declarations\n", indent=True)
     # add your code here
     tree.gen_type_decls(ctx)
     print("gen type decls")
 
+
 def gen_function_decls(tree, out):
     """Generate forward function declarations, writing them to out."""
-    ctx = uccontext.PhaseContext(2, out=out, indent='  ')
-    ctx.print('// Forward function declarations\n', indent=True)
+    ctx = uccontext.PhaseContext(2, out=out, indent="  ")
+    ctx.print("// Forward function declarations\n", indent=True)
     # add your code here
     tree.gen_function_decls(ctx)
     print("gen function decls")
 
+
 def gen_type_defs(tree, out):
     """Generate full type definitions, writing them to out."""
-    ctx = uccontext.PhaseContext(3, out=out, indent='  ')
-    ctx.print('// Full type definitions\n', indent=True)
+    ctx = uccontext.PhaseContext(3, out=out, indent="  ")
+    ctx.print("// Full type definitions\n", indent=True)
     # add your code here
     tree.gen_type_defs(ctx)
     print("gen type defs")
 
+
 def gen_function_defs(tree, out):
     """Generate full function definitions, writing them to out."""
-    ctx = uccontext.PhaseContext(4, out=out, indent='  ')
-    ctx.print('// Full function definitions\n', indent=True)
+    ctx = uccontext.PhaseContext(4, out=out, indent="  ")
+    ctx.print("// Full function definitions\n", indent=True)
     # add your code here
     tree.gen_function_defs(ctx)
     print("gen function defs")
