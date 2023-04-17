@@ -7,4 +7,12 @@ void main(string[] args)(foo f, bar b, baz z) {
   println(false + "hello");
   println("Hello" + true);
   println("Hello" + false);
+  //complicated add
+  println("Hello" + (1 + "str"));
+  println(int_to_string((5 + 3) + 9));
+  println(int_to_string(5 + 3 + 9));
+  println(5 + (3 + "4") + false);
+  println(int_to_string(5 + 3 * 9));
+  println(int_to_string(5 - 3 * 9));
+  println(1.0 + "false" + (false + "true" + 1));
 }

@@ -30,6 +30,13 @@ UC_FUNCTION(println)((uc_add(true, "hello"s))); //Statement
 UC_FUNCTION(println)((uc_add(false, "hello"s))); //Statement
 UC_FUNCTION(println)((uc_add("Hello"s, true))); //Statement
 UC_FUNCTION(println)((uc_add("Hello"s, false))); //Statement
+UC_FUNCTION(println)((uc_add("Hello"s, (uc_add(1, "str"s))))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)((uc_add((uc_add(5, 3)), 9)))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)((uc_add((uc_add(5, 3)), 9)))); //Statement
+UC_FUNCTION(println)((uc_add((uc_add(5, (uc_add(3, "4"s)))), false))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)((uc_add(5, (3 * 9))))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)((5 - (3 * 9)))); //Statement
+UC_FUNCTION(println)((uc_add((uc_add(1.0, "false"s)), (uc_add((uc_add(false, "true"s)), 1))))); //Statement
 }
 } // namespace uc
 
