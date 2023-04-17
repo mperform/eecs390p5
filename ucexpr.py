@@ -69,7 +69,7 @@ class IntegerNode(LiteralNode):
         """Compute the type of each expression in the given AST.
 
         Checks that the type of an expression is compatible with the
-        context in which it is used. Checks that a valid main function
+        context in ch it is used. Checks that a valid main function
         exists.
         """
         if self.text[-1] == "l" or self.text[-1] == "L":
@@ -363,7 +363,8 @@ class FieldAccessNode(ExpressionNode):
         """Generate full function definitions, writing them to out."""
         # self.receiver.gen_function_defs(ctx)
         #TODO: Is this always UC_REFERENCE? and is there a case where .name doesn't exist?
-        ctx.print(f"UC_VAR({self.receiver.name.raw})->UC_VAR({self.field.raw})", end='')
+        self.receiver.gen_function_defs(ctx)
+        ctx.print(f"->UC_VAR({self.field.raw})", end='')
         # UC_REFERENCE(Person)->age
         #TODO: maybe need UC in front of field 
         
@@ -411,13 +412,13 @@ class ArrayIndexNode(ExpressionNode):
             )
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        self.receiver.gen_function_defs(ctx)
+        # self.receiver.gen_function_defs(ctx)
         # uc_array_index()
-        ctx.print("[", end='')
+        ctx.print("uc_array_index(", end='')
+        self.receiver.gen_function_defs(ctx)
+        ctx.print(', ', end='')
         self.index.gen_function_defs(ctx)
-        ctx.print("]", end='')
-        #TODO: finish
-        # uc_construct<UC_REFERENCE(bar)>();
+        ctx.print(")", end='')
         
 #####################
 # Unary Expressions #
@@ -583,7 +584,11 @@ class IDNode(UnaryPrefixNode):
             self.type = ctx.global_env.lookup_type(
                 ctx.phase, self.position, self.expr.type.name
             )
-
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ctx.print("uc_id(", end='', indent=True)
+        self.expr.gen_function_defs(ctx)
+        ctx.print(')')
 
 ######################
 # Binary Expressions #
@@ -607,9 +612,11 @@ class BinaryOpNode(ExpressionNode):
     # add your code below if necessary
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
+        ctx.print(f"(", end='')
         self.lhs.gen_function_defs(ctx)
         ctx.print(f" {self.op_name} ", end='')
         self.rhs.gen_function_defs(ctx)
+        ctx.print(f")", end='')
 
 @dataclass
 class BinaryArithNode(BinaryOpNode):
@@ -999,6 +1006,15 @@ class PushNode(BinaryOpNode):
                 self.position,
                 "Not an applicable type for Push Array.",
             )
+    
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ctx.print("uc_array_push(", end='')
+        self.lhs.gen_function_defs(ctx)
+        ctx.print(', ', end='')
+        self.rhs.gen_function_defs(ctx)
+        ctx.print(")", end='')
+    
 
 
 @dataclass
@@ -1039,3 +1055,10 @@ class PopNode(BinaryOpNode):
                 self.position,
                 "Not an applicable type for pop.",
             )
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ctx.print("uc_array_pop(", end='')
+        self.lhs.gen_function_defs(ctx)
+        ctx.print(', ', end='')
+        self.rhs.gen_function_defs(ctx)
+        ctx.print(")", end='')

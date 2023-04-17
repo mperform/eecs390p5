@@ -76,15 +76,15 @@ UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args
   UC_REFERENCE(bar) UC_VAR(b);
   UC_REFERENCE(baz) UC_VAR(z);
   // Block Body
-UC_VAR(f) = uc_construct<UC_REFERENCE(foo)>()
-; //Statement
-UC_VAR(b) = uc_construct<UC_REFERENCE(bar)>()
-; //Statement
-UC_VAR(z) = uc_construct<UC_REFERENCE(baz)>()
-; //Statement
+(UC_VAR(f) = uc_construct<UC_REFERENCE(foo)>()
+); //Statement
+(UC_VAR(b) = uc_construct<UC_REFERENCE(bar)>()
+); //Statement
+(UC_VAR(z) = uc_construct<UC_REFERENCE(baz)>()
+); //Statement
 UC_FUNCTION(println)(UC_FUNCTION(int_to_string)(UC_VAR(f)->UC_VAR(x))); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(UC_VAR(b)->UC_VAR(f) == nullptr)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(UC_VAR(b)->UC_VAR(a) == nullptr)); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((UC_VAR(b)->UC_VAR(f) == nullptr))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((UC_VAR(b)->UC_VAR(a) == nullptr))); //Statement
 }
 } // namespace uc
 

@@ -53,60 +53,60 @@ UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args
   UC_PRIMITIVE(int) UC_VAR(i);
   UC_PRIMITIVE(float) UC_VAR(f);
   // Block Body
-UC_VAR(i) = 3; //Statement
-UC_VAR(f) = 4.0; //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(UC_VAR(i) == UC_VAR(i))); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(UC_VAR(f) != UC_VAR(f))); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(UC_VAR(i) == UC_VAR(f))); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(UC_VAR(i) != UC_VAR(f))); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(foo)>(3)
+(UC_VAR(i) = 3); //Statement
+(UC_VAR(f) = 4.0); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((UC_VAR(i) == UC_VAR(i)))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((UC_VAR(f) != UC_VAR(f)))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((UC_VAR(i) == UC_VAR(f)))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((UC_VAR(i) != UC_VAR(f)))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(foo)>(3)
  == uc_construct<UC_REFERENCE(foo)>(3)
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(foo)>(3)
  != uc_construct<UC_REFERENCE(foo)>(3)
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(foo)>(3)
  == uc_construct<UC_REFERENCE(foo)>(4)
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(foo)>(3)
  != uc_construct<UC_REFERENCE(foo)>(4)
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(foo)>(3)
- == nullptr)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(foo)>(3)
- != nullptr)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(foo)>(3)
+ == nullptr))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(foo)>(3)
+ != nullptr))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 )
  == uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 )
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 )
  != uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(4)
 )
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 )
  != uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 , uc_construct<UC_REFERENCE(foo)>(4)
 )
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 )
- == nullptr)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
+ == nullptr))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_ARRAY(UC_REFERENCE(foo))>(uc_construct<UC_REFERENCE(foo)>(3)
 )
- != nullptr)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(bar)>()
+ != nullptr))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(bar)>()
  == uc_construct<UC_REFERENCE(bar)>()
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(bar)>()
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(bar)>()
  != uc_construct<UC_REFERENCE(bar)>()
-)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(bar)>()
- == nullptr)); //Statement
-UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)(uc_construct<UC_REFERENCE(bar)>()
- != nullptr)); //Statement
+))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(bar)>()
+ == nullptr))); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(boolean_to_string)((uc_construct<UC_REFERENCE(bar)>()
+ != nullptr))); //Statement
 }
 } // namespace uc
 
