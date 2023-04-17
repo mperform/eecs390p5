@@ -192,7 +192,6 @@ class NameExpressionNode(ExpressionNode):
                                               self.name.raw)
     def gen_function_defs(self, ctx):
         """Generate full function definitions, writing them to out."""
-        #TODO: is UC_VAR here correct? 
         ctx.print(f"UC_VAR({self.name.raw})", end='')
 
 #######################
@@ -818,8 +817,16 @@ class PlusNode(BinaryArithNode):
                 self.position,
                 "Invalid primitive type for Plus Operation.",
             )
-
-
+    def gen_function_defs(self, ctx):
+        """Generate full function definitions, writing them to out."""
+        ctx.print(f"(", end='')
+        ctx.print(f"uc_add(", end='')
+        self.lhs.gen_function_defs(ctx)
+        ctx.print(f", ", end='')
+        self.rhs.gen_function_defs(ctx)
+        ctx.print(f")", end='')
+        ctx.print(f")", end='')
+        #(uc_add(lhs, rhs))
 @dataclass
 class MinusNode(BinaryArithNode):
     """An AST node representing a binary minus operation."""

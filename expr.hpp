@@ -12,7 +12,7 @@
  */
 
 #include "array.hpp"
-
+// #include "defs.hpp"
 namespace uc {
 
   // Template for obtaining the id of an object.
@@ -35,8 +35,8 @@ namespace uc {
 
   // Define a special case of uc_length_field for arrays
   template <class T>
-  auto uc_length_field(T ref) -> decltype(ref->size()) {
-    return ref->size();
+  auto uc_length_field(UC_ARRAY(T) ref) -> decltype(uc_array_length(ref)) {
+    return uc_array_length(ref);
   }
 
   // define your overloads for uc_add() here
@@ -47,10 +47,37 @@ namespace uc {
   //something + string -(concat)-> string
   // string + string -(concat)-> string
 
-  template<class T>
-  auto uc_add(T ref1, T ref2) {
-    
+  template<class T, class A>
+  auto uc_add(T ref1, A ref2) -> decltype(ref1 + ref2){
+    return ref1 + ref2;
   }
+
+  template<class T>
+  auto uc_add(UC_PRIMITIVE(string) ref1, UC_PRIMITIVE(string) ref2) -> decltype(ref1 + ref2){
+    return ref1 + ref2;
+  }
+
+  template<class T>
+  auto uc_add(UC_PRIMITIVE(string) ref1, T ref2) -> decltype(ref1 + std::to_string(ref2)){
+    return ref1 + std::to_string(ref2);
+  }
+
+  template<class T>
+  auto uc_add(T ref1, UC_PRIMITIVE(string) ref2) -> decltype(std::to_string(ref1) + ref2){
+    return std::to_string(ref1) + ref2;
+  }
+
+  template<>
+  auto uc_add(bool ref1, UC_PRIMITIVE(string) ref2) -> decltype(ucp_f_boolean_to_string(ref1) + ref2){
+    return ucp_f_boolean_to_string(ref1) + ref2;
+  }
+
+  template<>
+  auto uc_add(UC_PRIMITIVE(string) ref1, bool ref2) -> decltype(ref1 + ucp_f_boolean_to_string(ref2)){
+    return ref1 + ucp_f_boolean_to_string(ref2);
+  }
+  // another one reversed
+  
   
 } // namespace uc
 

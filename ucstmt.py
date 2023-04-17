@@ -211,7 +211,8 @@ class BreakNode(StatementNode):
         if not ctx["in_loop"]:
             error(ctx.phase, self.position, "break not found in loop.")
 
-
+    def gen_function_defs(self, ctx):
+        ctx.print("break", end='')
 @dataclass
 class ContinueNode(StatementNode):
     """An AST node representing a continue statement."""
@@ -222,7 +223,8 @@ class ContinueNode(StatementNode):
         if not ctx["in_loop"]:
             error(ctx.phase, self.position, "continue not found in loop.")
 
-
+    def gen_function_defs(self, ctx):
+        ctx.print("continue", end='')
 @dataclass
 class ReturnNode(StatementNode):
     """An AST node representing a return statement.
@@ -264,7 +266,13 @@ class ReturnNode(StatementNode):
                     self.position,
                     "a return expression is provided within a void function.",
                 )
-
+    def gen_function_defs(self, ctx):
+        ctx.print(f"return", end='')
+        if self.expr:
+            ctx.print(" ", end='')
+            self.expr.gen_function_defs(ctx)
+        ctx.print(';', end='')
+        ctx.print("//return node", end='')
 
 @dataclass
 class ExpressionStatementNode(StatementNode):
@@ -284,3 +292,5 @@ class ExpressionStatementNode(StatementNode):
         exists.
         """
         self.expr.type_check(ctx)
+    def gen_function_defs(self, ctx):
+        self.expr.gen_function_defs(ctx)

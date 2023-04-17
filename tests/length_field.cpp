@@ -43,7 +43,7 @@ UC_PRIMITIVE(void) UC_FUNCTION(main) (UC_ARRAY(UC_PRIMITIVE(string)) UC_VAR(args
   // decl local uC vars
   UC_REFERENCE(foo) UC_VAR(f);
   // Block Body
-UC_FUNCTION(println)((""s +   uc_length_field(UC_VAR(args)))); //Statement
+UC_FUNCTION(println)((uc_add(""s,   uc_length_field(UC_VAR(args))))); //Statement
 (UC_VAR(f) = uc_construct<UC_REFERENCE(foo)>(3, "hello"s)
 ); //Statement
 UC_FUNCTION(println)(  uc_length_field(UC_VAR(f))); //Statement
