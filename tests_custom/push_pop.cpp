@@ -108,6 +108,8 @@ uc_array_push(UC_VAR(arr), UC_VAR(start)); //Statement
 ; //Statement
 UC_FUNCTION(println)(UC_FUNCTION(int_to_string)(uc_array_index(UC_VAR(arr), 5))); //Statement
 UC_FUNCTION(println)(UC_FUNCTION(int_to_string)(uc_array_index(UC_VAR(arr), UC_VAR(num)))); //Statement
+UC_FUNCTION(println)("arr.length 23"s); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)(  uc_length_field(UC_VAR(arr)))); //Statement
 (UC_VAR(start) = 0); //Statement
   // Start of While Block
 while ((UC_VAR(start) < 10)) {
@@ -116,6 +118,7 @@ uc_array_pop(UC_VAR(arr), UC_VAR(num)); //Statement
 ++UC_VAR(start); //Statement
   }
 ; //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)(  uc_length_field(UC_VAR(arr)))); //Statement
 (UC_VAR(start) = 0); //Statement
 (UC_VAR(num) = 0); //Statement
   // Start of While Block
@@ -135,6 +138,8 @@ uc_array_pop(UC_VAR(arr), UC_VAR(num)); //Statement
 ++UC_VAR(start); //Statement
   }
 ; //Statement
+UC_FUNCTION(println)("arr.length"s); //Statement
+UC_FUNCTION(println)(UC_FUNCTION(int_to_string)(  uc_length_field(UC_VAR(arr)))); //Statement
 }
 } // namespace uc
 

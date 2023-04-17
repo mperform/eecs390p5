@@ -34,14 +34,24 @@ namespace uc {
   //a.length -> 3
 
   // Define a special case of uc_length_field for arrays
-  template <typename T, size_t N>
-  int uc_length_field(T ref) -> decltype({
-    return ref.size();
+  template <class T>
+  auto uc_length_field(T ref) -> decltype(ref->size()) {
+    return ref->size();
   }
 
   // define your overloads for uc_add() here
-  // template<class T>
-  // auto uc_add(T field1, T field2)
+  //Numeric type + numeric type -(add values)-> numeric type
+  //boolean + string -(concat)-> string
+  //string + boolean -(concat)> string 
+  //string + something -(concat)-> string 
+  //something + string -(concat)-> string
+  // string + string -(concat)-> string
+
+  template<class T>
+  auto uc_add(T ref1, T ref2) {
+    
+  }
+  
 } // namespace uc
 
 #endif // UC_EXPR_HPP_c49e54971d13f14fbc634d7a0fe4b38d421279e7

@@ -20,14 +20,15 @@ void test()(int start, int num, int[] arr) {
 
   println(int_to_string(arr[5]));
   println(int_to_string(arr[num]));
-
+  println("arr.length 23");
+  println(int_to_string(arr.length));
   start = 0;
   while(start < 10){
     arr >> num;
     ++start; 
   }
-  
-  // println(int_to_string(arr.length));
+
+  println(int_to_string(arr.length));
 
   start = 0;
   num = 0;
@@ -44,8 +45,8 @@ void test()(int start, int num, int[] arr) {
     arr >> num;
     ++start; 
   }
-
-  // println(int_to_string(arr.length));
+  println("arr.length");
+  println(int_to_string(arr.length));
 
 }
 
